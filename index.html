@@ -516,7 +516,16 @@
     </div>
   </div>
 
-<elevenlabs-convai agent-id="agent_7201k9870tqce3qt6tpztt1m6bsn"></elevenlabs-convai><script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+
+<script type="module">
+	import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+	createChat({
+		webhookUrl: 'https://rasheedreit.app.n8n.cloud/webhook/7f82f4f7-07a6-4d21-804e-5560955ade49/chat'
+	});
+</script>
+  
   <script>
     // === 1. MODAL DEFINITIONS ===
     const contactModal = document.getElementById('modal-contact');
