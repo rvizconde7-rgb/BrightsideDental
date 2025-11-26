@@ -516,14 +516,353 @@
     </div>
   </div>
 
-  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* --- 1. The Floating Launcher Button --- */
+  #reit-launcher {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #0f172a; /* Dark Blue */
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 99999;
+    transition: transform 0.2s;
+  }
+  #reit-launcher:hover { transform: scale(1.05); }
+
+  /* --- 2. The Main Widget Container --- */
+  #reit-widget {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 380px;
+    height: 650px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    z-index: 99999;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  /* --- 3. Header Section (Gradient) --- */
+  .reit-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    padding: 30px 24px;
+    color: white;
+    position: relative;
+  }
+  .reit-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+    opacity: 0.8;
+  }
+  .reit-header h2 { margin: 0; font-size: 24px; font-weight: 600; }
+  .reit-header p { margin: 5px 0 0; font-size: 16px; opacity: 0.9; }
+
+  /* --- 4. Content Area (Scrollable) --- */
+  .reit-content {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #f8fafc;
+    padding: 16px;
+    position: relative;
+  }
+
+  /* --- VIEW: HOME --- */
+  #view-home { display: block; }
+  
+  /* Status Card */
+  .status-card {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #334155;
+    font-weight: 500;
+  }
+  .status-dot {
+    width: 18px;
+    height: 18px;
+    background: #10b981; /* Green */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    color: white;
+    font-size: 10px;
+  }
+
+  /* CTA Card (Send Message) */
+  .cta-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cta-card:hover { transform: translateY(-2px); }
+  .cta-text h4 { margin: 0; font-size: 15px; color: #0f172a; }
+  .cta-text p { margin: 4px 0 0; font-size: 13px; color: #64748b; }
+  .cta-arrow { color: #3b82f6; }
+
+  /* Search/FAQ Section */
+  .faq-section h4 { font-size: 14px; color: #64748b; margin-bottom: 12px; }
+  
+  .faq-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #334155;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .faq-question:hover { background-color: #f1f5f9; }
+  
+  .faq-answer {
+    display: none; /* Hidden by default */
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #475569;
+    background-color: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    line-height: 1.5;
+  }
+
+  /* --- VIEW: MESSAGES (The Chat) --- */
+  #view-messages {
+    display: none;
+    height: 100%;
+    background: white;
+  }
+  /* This forces the n8n widget to fill our container */
+  .n8n-chat-wrapper {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* --- 5. Bottom Navigation Bar --- */
+  .reit-nav {
+    height: 60px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #94a3b8;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 10px;
+  }
+  .nav-item i { font-size: 18px; margin-bottom: 4px; }
+  .nav-item.active { color: #3b82f6; font-weight: 600; }
+
+</style>
+
+<div id="reit-launcher" onclick="toggleReitWidget()">
+  <i class="fa-solid fa-paper-plane" style="font-size: 24px;"></i>
+</div>
+
+<div id="reit-widget">
+  <div class="reit-header">
+    <div class="reit-close" onclick="toggleReitWidget()"><i class="fa-solid fa-xmark"></i></div>
+    <h2>Hi Rasheed 👋</h2>
+    <p>How can we help?</p>
+  </div>
+
+  <div class="reit-content">
+    
+    <div id="view-home">
+      <div class="status-card">
+        <div class="status-dot"><i class="fa-solid fa-check"></i></div>
+        Status: All systems operational
+      </div>
+
+      <div class="cta-card" onclick="switchTab('messages')">
+        <div class="cta-text">
+          <h4>Send us a message</h4>
+          <p>We typically reply instantly</p>
+        </div>
+        <div class="cta-arrow"><i class="fa-solid fa-paper-plane"></i></div>
+      </div>
+
+      <div class="faq-section">
+        <h4>Search for help</h4>
+        
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How do we modernise our tech stack?
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+          <div class="faq-answer">
+            Begin with a “technology health check”—audit current architecture and identify legacy components. We recommend migrating to modular microservices and adopting cloud-native infrastructure.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Where should we focus AI efforts?
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+          <div class="faq-answer">
+            Prioritise use-cases with clear business value: Lead scoring to increase conversion, personalised recommendations for retention, and automated valuations.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How do we fix cross-team bottlenecks?
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+          <div class="faq-answer">
+            Map end-to-end workflows to identify delays. Establish clear RACI (ownership), streamline governance, and improve inter-team communication rituals.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How can we speed up delivery?
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+          <div class="faq-answer">
+            Shift to agile frameworks, automate testing/deployment (CI/CD), and reduce decision delays. We can help conduct a product-delivery maturity assessment.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="view-messages">
+       <div id="n8n-chat-target" style="height: 100%; width: 100%;"></div>
+    </div>
+
+  </div>
+
+  <div class="reit-nav">
+    <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
+      <i class="fa-solid fa-house"></i>
+      Home
+    </div>
+    <div class="nav-item" id="nav-messages" onclick="switchTab('messages')">
+      <i class="fa-solid fa-comments"></i>
+      Messages
+    </div>
+    <div class="nav-item">
+      <i class="fa-solid fa-circle-question"></i>
+      Help
+    </div>
+  </div>
+</div>
 
 <script type="module">
-	import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 
-	createChat({
-		webhookUrl: 'https://rasheedreit.app.n8n.cloud/webhook/7f82f4f7-07a6-4d21-804e-5560955ade49/chat'
-	});
+  let chatInstance = null;
+
+  // Initialize Chat but don't show the default bubble
+  function initChat() {
+    createChat({
+      webhookUrl: 'https://rasheedreit.app.n8n.cloud/webhook/7f82f4f7-07a6-4d21-804e-5560955ade49/chat',
+      target: '#n8n-chat-target', // TARGETING OUR CUSTOM DIV
+      mode: 'fullscreen', // Fills the target div
+      showWelcomeScreen: false, 
+      initialMessages: [
+        'Hi! I am the REIT AI Assistant. Ask me anything about Real Estate modernization.'
+      ]
+    });
+  }
+  
+  // Wait for page load to init
+  window.addEventListener('DOMContentLoaded', initChat);
+</script>
+
+<script>
+  // Toggle the main widget open/close
+  function toggleReitWidget() {
+    const widget = document.getElementById('reit-widget');
+    const launcher = document.getElementById('reit-launcher');
+    
+    if (widget.style.display === 'flex') {
+      widget.style.display = 'none';
+      launcher.style.display = 'flex';
+    } else {
+      widget.style.display = 'flex';
+      launcher.style.display = 'none';
+    }
+  }
+
+  // Switch between Home and Messages tabs
+  function switchTab(tabName) {
+    const homeView = document.getElementById('view-home');
+    const msgView = document.getElementById('view-messages');
+    const navHome = document.getElementById('nav-home');
+    const navMsg = document.getElementById('nav-messages');
+
+    if (tabName === 'home') {
+      homeView.style.display = 'block';
+      msgView.style.display = 'none';
+      navHome.classList.add('active');
+      navMsg.classList.remove('active');
+    } else {
+      homeView.style.display = 'none';
+      msgView.style.display = 'block';
+      navHome.classList.remove('active');
+      navMsg.classList.add('active');
+    }
+  }
+
+  // Toggle FAQ Accordion
+  function toggleFaq(element) {
+    const answer = element.nextElementSibling;
+    const icon = element.querySelector('i');
+    
+    if (answer.style.display === 'block') {
+      answer.style.display = 'none';
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-right');
+    } else {
+      answer.style.display = 'block';
+      icon.classList.remove('fa-chevron-right');
+      icon.classList.add('fa-chevron-down');
+    }
+  }
 </script>
   
   <script>
