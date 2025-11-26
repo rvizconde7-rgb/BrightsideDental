@@ -518,6 +518,7 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
 
 <style>
   /* --- 1. The Floating Launcher Button --- */
@@ -560,9 +561,10 @@
   /* --- 3. Header Section (Gradient) --- */
   .reit-header {
     background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-    padding: 30px 24px;
+    padding: 24px;
     color: white;
     position: relative;
+    flex-shrink: 0;
   }
   .reit-close {
     position: absolute;
@@ -572,66 +574,45 @@
     opacity: 0.8;
   }
   .reit-header h2 { margin: 0; font-size: 24px; font-weight: 600; }
-  .reit-header p { margin: 5px 0 0; font-size: 16px; opacity: 0.9; }
+  .reit-header p { margin: 5px 0 0; font-size: 15px; opacity: 0.9; }
 
-  /* --- 4. Content Area (Scrollable) --- */
+  /* --- 4. Content Area --- */
   .reit-content {
     flex: 1;
     overflow-y: auto;
     background-color: #f8fafc;
-    padding: 16px;
     position: relative;
+    /* Trendy Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
   }
+  .reit-content::-webkit-scrollbar { width: 5px; }
+  .reit-content::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
 
   /* --- VIEW: HOME --- */
-  #view-home { display: block; }
+  #view-home { display: block; padding: 16px; }
   
-  /* Status Card */
-  .status-card {
-    background: white;
-    padding: 12px 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: #334155;
-    font-weight: 500;
-  }
-  .status-dot {
-    width: 18px;
-    height: 18px;
-    background: #10b981; /* Green */
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-    color: white;
-    font-size: 10px;
-  }
-
-  /* CTA Card (Send Message) */
+  /* CTA Card */
   .cta-card {
     background: white;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     margin-bottom: 24px;
     cursor: pointer;
     transition: 0.2s;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border: 1px solid #f1f5f9;
   }
-  .cta-card:hover { transform: translateY(-2px); }
-  .cta-text h4 { margin: 0; font-size: 15px; color: #0f172a; }
+  .cta-card:hover { transform: translateY(-2px); border-color: #3b82f6; }
+  .cta-text h4 { margin: 0; font-size: 15px; color: #0f172a; font-weight: 600; }
   .cta-text p { margin: 4px 0 0; font-size: 13px; color: #64748b; }
   .cta-arrow { color: #3b82f6; }
 
-  /* Search/FAQ Section */
-  .faq-section h4 { font-size: 14px; color: #64748b; margin-bottom: 12px; }
+  /* FAQ Section */
+  .faq-section h4 { font-size: 13px; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
   
   .faq-item {
     background: white;
@@ -641,36 +622,70 @@
     overflow: hidden;
   }
   .faq-question {
-    padding: 12px 16px;
+    padding: 14px 16px;
     font-size: 13px;
     color: #334155;
     display: flex;
     justify-content: space-between;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 600;
+    align-items: center;
   }
-  .faq-question:hover { background-color: #f1f5f9; }
+  .faq-question:hover { background-color: #f8fafc; color: #3b82f6; }
   
   .faq-answer {
-    display: none; /* Hidden by default */
-    padding: 12px 16px;
+    display: none;
+    padding: 16px;
     font-size: 13px;
     color: #475569;
-    background-color: #f8fafc;
+    background-color: #fff;
     border-top: 1px solid #e2e8f0;
-    line-height: 1.5;
+    line-height: 1.6;
   }
+  .faq-answer strong { color: #1e3a8a; display: block; margin-top: 12px; margin-bottom: 4px; }
+  .faq-answer strong:first-child { margin-top: 0; }
 
   /* --- VIEW: MESSAGES (The Chat) --- */
   #view-messages {
     display: none;
     height: 100%;
+    width: 100%;
     background: white;
   }
-  /* This forces the n8n widget to fill our container */
-  .n8n-chat-wrapper {
-    width: 100%;
-    height: 100%;
+  
+  /* --- N8N CHAT OVERRIDES (Clean Up) --- */
+  /* This targets the div we inject the chat into */
+  #n8n-chat-target {
+    font-family: 'Inter', sans-serif !important;
+  }
+  /* Hide the default n8n header since we have our custom one */
+  .chat-header { display: none !important; }
+  
+  /* Hide the "Start New Conversation" button at top if it appears */
+  .chat-layout-header { display: none !important; }
+
+  /* HIDE EXTRA ICONS (Clip, Emoji, Mic) */
+  .chat-input-actions { display: none !important; }
+  .chat-input-mic-button { display: none !important; }
+
+  /* CLEAN INPUT BOX STYLE */
+  .chat-input-container {
+    border-top: 1px solid #f1f5f9 !important;
+    padding: 15px !important;
+    background: white !important;
+  }
+  .chat-input-wrapper {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 25px !important; /* Rounded pill shape */
+    padding: 5px 15px !important;
+  }
+  .chat-input {
+    font-size: 14px !important;
+  }
+  /* Style the send button */
+  .chat-input-send-button {
+    color: #3b82f6 !important;
   }
 
   /* --- 5. Bottom Navigation Bar --- */
@@ -681,6 +696,7 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
+    flex-shrink: 0;
   }
   .nav-item {
     display: flex;
@@ -710,11 +726,7 @@
   <div class="reit-content">
     
     <div id="view-home">
-      <div class="status-card">
-        <div class="status-dot"><i class="fa-solid fa-check"></i></div>
-        Status: All systems operational
-      </div>
-
+      
       <div class="cta-card" onclick="switchTab('messages')">
         <div class="cta-text">
           <h4>Send us a message</h4>
@@ -724,7 +736,7 @@
       </div>
 
       <div class="faq-section">
-        <h4>Search for help</h4>
+        <h4>Common Questions</h4>
         
         <div class="faq-item">
           <div class="faq-question" onclick="toggleFaq(this)">
@@ -732,7 +744,10 @@
             <i class="fa-solid fa-chevron-right"></i>
           </div>
           <div class="faq-answer">
-            Begin with a “technology health check”—audit current architecture and identify legacy components. We recommend migrating to modular microservices and adopting cloud-native infrastructure.
+            <strong>General Answer:</strong>
+            Begin with a “technology health check” — audit current architecture, identify legacy components, highlight bottlenecks in deployment and scalability. Then develop a roadmap: e.g., migrate to modular microservices, adopt cloud-native infrastructure, implement APIs for data flow.
+            <strong>Consulting Engagement:</strong>
+            Phase 1: Architecture review & gap analysis. <br>Phase 2: Detailed target state design (with cost/benefit). <br>Phase 3: Implementation roadmap with quick-wins.
           </div>
         </div>
 
@@ -742,7 +757,10 @@
             <i class="fa-solid fa-chevron-right"></i>
           </div>
           <div class="faq-answer">
-            Prioritise use-cases with clear business value: Lead scoring to increase conversion, personalised recommendations for retention, and automated valuations.
+            <strong>General Answer:</strong>
+            Prioritise use-cases with clear business value and available data — for instance: lead scoring (increase conversion), personalised property recommendations (improve user retention), automated valuations (drive engagement).
+            <strong>Consulting Engagement:</strong>
+            Start with an AI-opportunity workshop, followed by a prioritisation matrix (effort vs. value). Then pilot one or two “minimum viable AI” initiatives.
           </div>
         </div>
 
@@ -752,7 +770,10 @@
             <i class="fa-solid fa-chevron-right"></i>
           </div>
           <div class="faq-answer">
-            Map end-to-end workflows to identify delays. Establish clear RACI (ownership), streamline governance, and improve inter-team communication rituals.
+            <strong>General Answer:</strong>
+            Map end-to-end workflows (from idea to deployment), identify handoff delays, unclear ownership, redundant approval layers. Establish clear RACI, streamline governance, and embed regular inter-team communication rituals.
+            <strong>Consulting Engagement:</strong>
+            Carry out process mapping sessions, highlight top 3–5 bottlenecks, recommend process redesign, and provide change management plans.
           </div>
         </div>
 
@@ -762,7 +783,10 @@
             <i class="fa-solid fa-chevron-right"></i>
           </div>
           <div class="faq-answer">
-            Shift to agile frameworks, automate testing/deployment (CI/CD), and reduce decision delays. We can help conduct a product-delivery maturity assessment.
+            <strong>General Answer:</strong>
+            Increase velocity by shifting to agile frameworks (sprints, minimal viable features), automating testing/deployment (CI/CD), reducing handoffs and decision delays, and establishing clear prioritisation of features.
+            <strong>Consulting Engagement:</strong>
+            Conduct a product-delivery maturity assessment, define target delivery model (roles, processes, tooling), and pilot fast-track teams.
           </div>
         </div>
 
@@ -800,12 +824,20 @@
   function initChat() {
     createChat({
       webhookUrl: 'https://rasheedreit.app.n8n.cloud/webhook/7f82f4f7-07a6-4d21-804e-5560955ade49/chat',
-      target: '#n8n-chat-target', // TARGETING OUR CUSTOM DIV
-      mode: 'fullscreen', // Fills the target div
+      target: '#n8n-chat-target', 
+      mode: 'fullscreen', 
       showWelcomeScreen: false, 
       initialMessages: [
         'Hi! I am the REIT AI Assistant. Ask me anything about Real Estate modernization.'
-      ]
+      ],
+      // This config helps clean up the UI
+      i18n: {
+        en: {
+          title: '', // Empty title to hide internal header
+          subtitle: '',
+          inputPlaceholder: 'Message...', // Simple placeholder
+        }
+      }
     });
   }
   
@@ -818,13 +850,16 @@
   function toggleReitWidget() {
     const widget = document.getElementById('reit-widget');
     const launcher = document.getElementById('reit-launcher');
+    const icon = launcher.querySelector('i');
     
     if (widget.style.display === 'flex') {
       widget.style.display = 'none';
-      launcher.style.display = 'flex';
+      launcher.style.transform = 'scale(1)';
+      icon.className = 'fa-solid fa-paper-plane';
     } else {
       widget.style.display = 'flex';
-      launcher.style.display = 'none';
+      launcher.style.transform = 'scale(0.9)';
+      icon.className = 'fa-solid fa-xmark'; // Change icon to X when open
     }
   }
 
@@ -841,8 +876,9 @@
       navHome.classList.add('active');
       navMsg.classList.remove('active');
     } else {
-      homeView.style.display = 'none';
-      msgView.style.display = 'block';
+      homeView.style.display = 'block'; // KEEP CONTAINER BLOCK
+      msgView.style.display = 'block'; // SHOW CHAT
+      homeView.style.display = 'none'; // HIDE HOME
       navHome.classList.remove('active');
       navMsg.classList.add('active');
     }
